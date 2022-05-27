@@ -10,7 +10,7 @@ describe('Test', function () {
     await factory.deployed();
     console.log('Factory deployed to ', factory.address);
 
-    tx = await factory.deploy('PFP', 'PFP');
+    tx = await factory.deploy('PFP', 'PFP', '0x4F542fb9544F53f047233f5cf4f4A84372FdABf9');
     await tx.wait();
     /*
     console.log(await factory.nextTokenId());
