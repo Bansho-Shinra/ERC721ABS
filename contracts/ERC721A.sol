@@ -5,6 +5,7 @@
 pragma solidity ^0.8.4;
 
 import './IERC721A.sol';
+import "@openzeppelin/contracts/security/Pausable.sol";
 
 /**
  * @dev ERC721 token receiver interface.
@@ -28,7 +29,7 @@ interface ERC721A__IERC721Receiver {
  *
  * Assumes that the maximum token id cannot exceed 2**256 - 1 (max value of uint256).
  */
-contract ERC721A is IERC721A {
+contract ERC721A is IERC721A, Pausable {
     // Mask of an entry in packed address data.
     uint256 private constant BITMASK_ADDRESS_DATA_ENTRY = (1 << 64) - 1;
 
@@ -57,16 +58,16 @@ contract ERC721A is IERC721A {
     uint256 private constant BITMASK_NEXT_INITIALIZED = 1 << 225;
 
     // The tokenId of the next token to be minted.
-    uint256 private _currentIndex;
+    uint256 internal _currentIndex;
 
     // The number of tokens burned.
     uint256 private _burnCounter;
 
     // Token name
-    string private _name;
+    string internal _name;
 
     // Token symbol
-    string private _symbol;
+    string internal _symbol;
 
     // Mapping from token ID to ownership details
     // An empty struct value does not necessarily mean the token is unowned.
@@ -553,6 +554,7 @@ contract ERC721A is IERC721A {
         address to,
         uint256 tokenId
     ) private {
+        require(!paused(), "ERC721Pausable: token transfer while paused");
         uint256 prevOwnershipPacked = _packedOwnershipOf(tokenId);
 
         if (address(uint160(prevOwnershipPacked)) != from) revert TransferFromIncorrectOwner();

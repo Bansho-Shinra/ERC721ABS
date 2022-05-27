@@ -10,7 +10,7 @@ import '../extensions/ERC721ABurnable.sol';
 contract ERC721AQueryableMock is ERC721AQueryable, ERC721ABurnable {
     constructor(string memory name_, string memory symbol_) ERC721A(name_, symbol_) {}
 
-    function safeMint(address to, uint256 quantity) public {
-        _safeMint(to, quantity);
+    function nextTokenId() public view returns (uint256) {
+        return _nextTokenId();
     }
 }
