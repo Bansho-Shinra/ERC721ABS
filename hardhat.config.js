@@ -14,6 +14,17 @@ if (process.env.REPORT_COVERAGE) {
   require('solidity-coverage');
 }
 
+const {
+  PRIVATE_KEY,
+  PRIVATE_KEY_POLYGON,
+  PRIVATE_KEY_MUMBAI,
+  PRIVATE_KEY_TEST,
+  ALCHEMY_API_KEY_MAINNET,
+  ALCHEMY_API_KEY_POLYGON,
+  // ALCHEMY_API_KEY_MUMBAI,
+  // POLYGONSCAN_API_KEY,
+} = process.env;
+
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
@@ -25,6 +36,50 @@ module.exports = {
         enabled: true,
         runs: 800,
       },
+    },
+  },
+  networks: {
+    mainnet: {
+      url: `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_API_KEY_MAINNET}`,
+      accounts: [`${PRIVATE_KEY}`],
+    },
+    polygonbansho: {
+      //url: `https://polygon-rpc.com`,
+      url: `https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY_POLYGON}`,
+      accounts: [`${PRIVATE_KEY}`],
+    },
+    polygontest: {
+      url: `https://polygon-rpc.com`,
+      //url: `https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY_POLYGON}`,
+      accounts: [`${PRIVATE_KEY_TEST}`], // Deploy用
+    },
+    polygon: {
+      url: `https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY_POLYGON}`,
+      accounts: [`${PRIVATE_KEY_POLYGON}`],
+    },
+    mumbai: {
+      //      url: `https://polygon-mumbai.g.alchemy.com/v2/${ALCHEMY_API_KEY_MUMBAI}`,
+      url: 'https://rpc-mumbai.maticvigil.com',
+      accounts: [`${PRIVATE_KEY_TEST}`],
+    },
+    optimism: {
+      url: `https://mainnet.optimism.io`,
+      accounts: [`${PRIVATE_KEY_MUMBAI}`],
+    },
+    optimismkovan: {
+      url: `https://kovan.optimism.io`,
+      accounts: [`${PRIVATE_KEY_MUMBAI}`],
+    },
+    astar: {
+      url: `https://evm.astar.network`,
+      accounts: [`${PRIVATE_KEY}`],
+    },
+    astart: {
+      url: `https://evm.astar.network`,
+      accounts: [`${PRIVATE_KEY_TEST}`],
+    },
+    localhost: {
+      timeout: 40000000,
     },
   },
   gasReporter: {

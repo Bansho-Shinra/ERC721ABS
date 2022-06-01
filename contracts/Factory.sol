@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
 
 contract Factory is AccessControlEnumerable {
-    uint256 private _price = 0.005 ether;
+    uint256 private _price = 100 ether;
     bytes32 public constant DEPLOYER = keccak256("DEPLOYER");
     address private _implementation;
 

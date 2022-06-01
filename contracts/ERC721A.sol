@@ -658,7 +658,7 @@ contract ERC721A is IERC721A, Pausable {
             // - `numberBurned += 1`.
             //
             // We can directly decrement the balance, and increment the number burned.
-            // This is equivalent to `packed -= 1; packed += 1 << BITPOS_NUMBER_BURNED;`.
+            // This is equivalent to `packed -= 1; packed += 1 <    < BITPOS_NUMBER_BURNED;`.
             _packedAddressData[from] += (1 << BITPOS_NUMBER_BURNED) - 1;
 
             // Updates:

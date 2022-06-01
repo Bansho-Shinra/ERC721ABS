@@ -4,9 +4,8 @@
 
 pragma solidity ^0.8.4;
 
-import './ERC721A.sol';
-import './IERC721A.sol';
-import './mocks/ERC721AQueryableStartTokenIdMock.sol';
+import './extensions/ERC721AQueryable.sol';
+import './mocks/StartTokenIdHelper.sol';
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/token/common/ERC2981.sol";
@@ -17,20 +16,21 @@ interface ICustomURI {
     function tokenURI(uint256) external view returns (string memory);
 }
 
-contract ERC721ABS is  ERC721AQueryableStartTokenIdMock, AccessControlEnumerable, ERC2981, Ownable {
+contract ERC721ABS is StartTokenIdHelper, ERC721AQueryable, AccessControlEnumerable, ERC2981, Ownable {
     using Strings for uint256;
     bool private _initialized;
     string private _base;
     address private _customURI;
 
-    constructor() ERC721AQueryableStartTokenIdMock("", "", 0){
-    }
+    constructor(
+    ) StartTokenIdHelper(0) ERC721A("", "") {}
 
     function initialize(string memory name_, string memory symbol_, address owner_, address royalty_) public {
         require(_initialized == false, "Already initialized");
         _name = name_;
         _symbol = symbol_;
         _currentIndex = 1;
+        startTokenId = 1;
         _setupRole(DEFAULT_ADMIN_ROLE, owner_);
         _transferOwnership(owner_);
         _setDefaultRoyalty(royalty_, 1000);
@@ -80,13 +80,26 @@ contract ERC721ABS is  ERC721AQueryableStartTokenIdMock, AccessControlEnumerable
         _customURI = customURI_;
     }
 
+    function _startTokenId() internal view override returns (uint256) {
+        return startTokenId;
+    }
+
+    function nextTokenId() public view returns (uint256) {
+        return _nextTokenId();
+    }
+
     function supportsInterface(bytes4 interfaceId)
         public
         view
         virtual
-        override(ERC721A, IERC721A, ERC2981, AccessControlEnumerable)
+        override(IERC721A, ERC721A, ERC2981, AccessControlEnumerable)
         returns (bool)
     {
-        return super.supportsInterface(interfaceId);
+    
+        return interfaceId == type(IERC2981).interfaceId ||
+            interfaceId == type(IAccessControlEnumerable).interfaceId ||
+            interfaceId == 0x01ffc9a7 || // ERC165 interface ID for ERC165.
+            interfaceId == 0x80ac58cd || // ERC165 interface ID for ERC721.
+            interfaceId == 0x5b5e139f; // ERC165 interface ID for ERC721Metadata.;
     }
 }
