@@ -2,13 +2,13 @@
 
 pragma solidity ^0.8.4;
 
-import "./ERC721ABS.sol";
-import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
-import "@openzeppelin/contracts/proxy/Clones.sol";
+import './ERC721ABS.sol';
+import '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import '@openzeppelin/contracts/proxy/Clones.sol';
 
 contract Factory is AccessControlEnumerable {
     uint256 private _price = 100 ether;
-    bytes32 public constant DEPLOYER = keccak256("DEPLOYER");
+    bytes32 public constant DEPLOYER = keccak256('DEPLOYER');
     address private _implementation;
 
     constructor() {
@@ -17,20 +17,21 @@ contract Factory is AccessControlEnumerable {
         _implementation = address(new ERC721ABS());
     }
 
-    function deploy(string calldata name, string calldata symbol, address royalty)
-        external
-        payable
-        returns (address)
-    {
-        require(msg.value == price(), "Price is invalid");
+    function deploy(
+        string calldata name,
+        string calldata symbol,
+        address royalty,
+        string memory baseURI_
+    ) external payable returns (address) {
+        require(msg.value == price(), 'Price is invalid');
         address clone = Clones.clone(_implementation);
-        ERC721ABS(clone).initialize(name, symbol, msg.sender, royalty);
-        emit Deploy(name, symbol, clone, msg.sender);
+        ERC721ABS(clone).initialize(name, symbol, msg.sender, royalty, baseURI_);
+        emit Deploy(name, symbol, clone, msg.sender, baseURI_);
         return clone;
     }
 
     function withdraw() public {
-        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "needs admin role");
+        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), 'needs admin role');
         address payable receiver = payable(_msgSender());
         emit Withdraw(address(this).balance);
         receiver.transfer(address(this).balance);
@@ -42,15 +43,10 @@ contract Factory is AccessControlEnumerable {
     }
 
     function setPrice(uint256 price_) public {
-        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "needs admin role");
+        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), 'needs admin role');
         _price = price_;
     }
 
-    event Deploy(
-        string name,
-        string symbol,
-        address implementation,
-        address owner
-    );
+    event Deploy(string name, string symbol, address implementation, address owner, string baseURI);
     event Withdraw(uint256 amount_);
 }
